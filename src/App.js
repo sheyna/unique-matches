@@ -98,9 +98,9 @@ function App() {
       }
      });
 
-     console.log(uniqueToOne);
-     console.log(uniqueToTwo);
-     console.log(shared);
+     setUniqueToPersonOne(uniqueToOne);
+     setUniqueToPersonTwo(uniqueToTwo);
+     setSharedMatches(shared);
 
   }
 
@@ -121,12 +121,58 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+      <h1>Unique Matches</h1>
         <form>
-          <textarea onChange={setPersonOneInput}/>
-          <textarea onChange={setPersonTwoInput}/>
-          <button onClick={processPersons}>Sort by shared and unique matches</button>
+          <div className='instructions'>
+            <p>On Ancestry: Go to 'Shared Matches' on a Match's profile page.</p>
+            <ol>
+            <li>Copy all page contents (<span>cmd + A</span> on a Mac, or <span>ctl + A</span> on a PC).</li>
+            <li>Paste into one of the text fields below (<span>cmd + V</span> on a Mac, or <span>ctl + V</span> on a PC).</li>
+            <li>Repeat with a second Match's profile</li>
+            <li>Click the 'Sort...' button.</li>
+            </ol>
+          </div>
+          <div className='colGroup'>
+            <div className='formColHalf'>
+              <label>A: Paste contents of one 'Shared Matches' page
+              <textarea onChange={setPersonOneInput}/>
+              </label>
+            </div>
+            <div className='formColHalf'>
+              <label>B: Paste contents of another 'Shared Matches' page
+              <textarea onChange={setPersonTwoInput}/>
+              </label>
+            </div>
+          </div>
+          <button className='formBtn' onClick={processPersons}>Sort by shared and unique matches</button>
         </form>
       </header>
+      <div className='results'>
+        <section>
+          <h3>Unique to A</h3>
+          <ul>
+            {uniqueToPersonOne.map((item, idx) => {
+              return <li key={idx}>{item}</li>
+            })}
+          </ul>
+        </section>
+        <section>
+          <h3>Shared by both A and B</h3>
+          <ul>
+            {sharedMatches.map((item, idx) => {
+              return <li key={idx}>{item}</li>
+            })}
+          </ul>
+        </section>
+        <section>
+          <h3>Unique to B</h3>
+          <ul>
+            {uniqueToPersonTwo.map((item, idx) => {
+              return <li key={idx}>{item}</li>
+            })}
+          </ul>
+        </section>
+      </div>
     </div>
   );
 }
