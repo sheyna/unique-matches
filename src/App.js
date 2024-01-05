@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 class matchProfile {
   constructor() {
+    this.testPerson = '';
     this.closeFamily = [];
     this.extendedFamily = [];
     this.distantFamily = [];
@@ -51,13 +52,54 @@ class matchProfile {
   processMatches(e) {
     let breakLines = e.target.value.trim().match(/[^\r\n]+/g).map(line => line.trim());
 
-    const closeIndex = breakLines.indexOf('Close Family') || 0;
-    const extendedIndex = breakLines.indexOf('Extended Family') || 0;
-    const distantIndex = breakLines.indexOf('Distant Family') || 0;
+    breakLines.forEach(line => {
+      if (line.includes(' and ') && this.testPerson === '') {
+        this.testPerson = line;
+      }
+    });
+    
 
-    const closeFamily = this.cleanUpMatchList(breakLines.slice(closeIndex + 1, extendedIndex));
-    const extendedFamily = this.cleanUpMatchList(breakLines.slice(extendedIndex + 1, distantIndex))
-     const distantFamily = this.cleanUpMatchList(breakLines.slice(distantIndex + 1, breakLines.length - 1));
+    const closeIndex = breakLines.indexOf('Close Family');
+    const extendedIndex = breakLines.indexOf('Extended Family');
+    const distantIndex = breakLines.indexOf('Distant Family');
+
+    console.log(closeIndex, extendedIndex, distantIndex);
+
+    let closeFamilyStart = closeIndex + 1; 
+    let closeFamilyFinish = extendedIndex;
+    let extendedFamilyStart = extendedIndex + 1;
+    let extendedFamilyFinish = distantIndex;
+    let distantFamilyStart = distantIndex + 1;
+    let distantFamilyFinish = breakLines.length - 1;
+
+    let closeFamily = [];
+    let extendedFamily = [];
+    let distantFamily = [];
+
+    if (closeIndex >= 0) {
+      if (!extendedIndex) {
+        if (!distantIndex) {
+          closeFamilyFinish = breakLines.length - 1;
+        } else {
+          closeFamilyFinish = distantIndex;
+        }
+      }
+      closeFamily = this.cleanUpMatchList(breakLines.slice(closeFamilyStart, closeFamilyFinish));
+    }
+    if (extendedIndex >= 0) {
+      console.log('there is extended index');
+      if (!distantIndex) {
+        console.log('there is no distant index');
+        extendedFamilyFinish = breakLines.length - 1;
+      }
+      extendedFamily = this.cleanUpMatchList(breakLines.slice(extendedFamilyStart, extendedFamilyFinish));
+    }
+    if (distantIndex >= 0) {
+      distantFamily = this.cleanUpMatchList(breakLines.slice(distantFamilyStart, distantFamilyFinish));
+    }
+    console.log(closeFamilyStart, closeFamilyFinish);
+    console.log(extendedFamilyStart, extendedFamilyFinish);
+    console.log(distantFamilyStart, distantFamilyFinish);
 
     this.closeFamily = closeFamily;
     this.extendedFamily = extendedFamily;
@@ -69,8 +111,10 @@ class matchProfile {
 
 function App() {
   const [ personOneInput, setPersonOneInput ] = useState();
-
   const [ personTwoInput, setPersonTwoInput ] = useState();
+
+  const [ titleA, setTitleA ] = useState();
+  const [ titleB, setTitleB ] = useState();
 
   const [uniqueToPersonOne, setUniqueToPersonOne ] = useState([]);
   const [uniqueToPersonTwo, setUniqueToPersonTwo ] = useState([]);
@@ -79,9 +123,7 @@ function App() {
   function compareMatches(person1, person2) {
 
     let uniqueToOne = [];
-
     let uniqueToTwo = [];
-
     let shared = [];
 
     person1.matchNamesOnly.forEach((match, idx) => {
@@ -97,6 +139,9 @@ function App() {
         uniqueToTwo.push(person2.allMatches[idx]);
       }
      });
+
+     setTitleA(person1.testPerson);
+     setTitleB(person2.testPerson);
 
      setUniqueToPersonOne(uniqueToOne);
      setUniqueToPersonTwo(uniqueToTwo);
@@ -115,13 +160,17 @@ function App() {
     personOne.shortenMatches();
     personTwo.shortenMatches();
 
+    console.log(personOne);
+    console.log(personTwo);
+
     compareMatches(personOne, personTwo);
   }
 
   return (
-    <div className="App">
+    <div>
       <header className="App-header">
       <h1>Unique Matches</h1>
+      </header>
         <form>
           <div className='instructions'>
             <p>On Ancestry: Go to 'Shared Matches' on a Match's profile page.</p>
@@ -146,10 +195,11 @@ function App() {
           </div>
           <button className='formBtn' onClick={processPersons}>Sort by shared and unique matches</button>
         </form>
-      </header>
+      
       <div className='results'>
         <section>
           <h3>Unique to A</h3>
+          <h4>{titleA}</h4>
           <ul>
             {uniqueToPersonOne.map((item, idx) => {
               return <li key={idx}>{item}</li>
@@ -166,6 +216,7 @@ function App() {
         </section>
         <section>
           <h3>Unique to B</h3>
+          <h4>{titleB}</h4>
           <ul>
             {uniqueToPersonTwo.map((item, idx) => {
               return <li key={idx}>{item}</li>
