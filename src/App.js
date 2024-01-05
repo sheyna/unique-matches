@@ -58,12 +58,9 @@ class matchProfile {
       }
     });
     
-
     const closeIndex = breakLines.indexOf('Close Family');
     const extendedIndex = breakLines.indexOf('Extended Family');
     const distantIndex = breakLines.indexOf('Distant Family');
-
-    console.log(closeIndex, extendedIndex, distantIndex);
 
     let closeFamilyStart = closeIndex + 1; 
     let closeFamilyFinish = extendedIndex;
@@ -87,9 +84,7 @@ class matchProfile {
       closeFamily = this.cleanUpMatchList(breakLines.slice(closeFamilyStart, closeFamilyFinish));
     }
     if (extendedIndex >= 0) {
-      console.log('there is extended index');
       if (!distantIndex) {
-        console.log('there is no distant index');
         extendedFamilyFinish = breakLines.length - 1;
       }
       extendedFamily = this.cleanUpMatchList(breakLines.slice(extendedFamilyStart, extendedFamilyFinish));
@@ -97,9 +92,6 @@ class matchProfile {
     if (distantIndex >= 0) {
       distantFamily = this.cleanUpMatchList(breakLines.slice(distantFamilyStart, distantFamilyFinish));
     }
-    console.log(closeFamilyStart, closeFamilyFinish);
-    console.log(extendedFamilyStart, extendedFamilyFinish);
-    console.log(distantFamilyStart, distantFamilyFinish);
 
     this.closeFamily = closeFamily;
     this.extendedFamily = extendedFamily;
@@ -159,9 +151,6 @@ function App() {
 
     personOne.shortenMatches();
     personTwo.shortenMatches();
-
-    console.log(personOne);
-    console.log(personTwo);
 
     compareMatches(personOne, personTwo);
   }
